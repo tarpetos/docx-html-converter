@@ -1,0 +1,5 @@
+black~=23.11.0
+pyinstaller~=6.2.0
+pypandoc~=1.12
+beautifulsoup4~=4.12.2
+tkinterdnd2~=0.3.0
