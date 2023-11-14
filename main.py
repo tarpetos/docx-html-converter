@@ -9,12 +9,6 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 from tkinterdnd2.TkinterDnD import DnDEvent
 from bs4 import BeautifulSoup
 
-DOC_FILE_TYPES = [
-    ("Word Documents", "*.doc"),
-    ("Word Documents", "*.docx"),
-]
-
-HTML_FILE_TYPE = [("HTML Documents", "*.html")]
 
 WINDOWS_OS = "Windows"
 
