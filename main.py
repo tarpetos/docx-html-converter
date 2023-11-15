@@ -3,14 +3,14 @@ import re
 import platform
 import tkinter as tk
 import pypandoc
-from typing import List
+from typing import List, Type, Literal
 from tkinter import messagebox as mb
 from tkinterdnd2 import TkinterDnD, DND_FILES
 from tkinterdnd2.TkinterDnD import DnDEvent
 from bs4 import BeautifulSoup
 
-
 WINDOWS_OS = "Windows"
+PositionOption: Type = Literal["left", "right", "top", "bottom"]
 
 
 def windows_fix(html_content: str) -> str:
@@ -28,21 +28,6 @@ def open_html_file(html_path: str) -> str:
     return content
 
 
-def remove_html_prefix(html_content: str) -> str:
-    ul_index = re.search(r"<ul>", html_content).start()
-    html_content = html_content[ul_index:]
-
-    def replace(match, counter=[0]):
-        if counter[0] == 0:
-            counter[0] += 1
-            return ""
-        return match.group(0)
-
-    html_content = re.sub(r"<ul>.*?</ul>", replace, html_content, flags=re.DOTALL)
-    html_content = re.sub(r"^\s*", "", html_content, flags=re.MULTILINE)
-    return html_content
-
-
 def parse_html(html_content: str) -> str:
     pattern = re.compile(r"(.*?)</ul>", re.DOTALL)
     match = pattern.search(html_content)
@@ -52,9 +37,10 @@ def parse_html(html_content: str) -> str:
     return html_content
 
 
-def docx_to_html(docx_path: str, html_path: str) -> None:
+def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
     html_content = pypandoc.convert_file(docx_path, "html", format="docx")
-    html_content = parse_html(html_content)
+    if remove_prefix:
+        html_content = parse_html(html_content)
 
     soup = BeautifulSoup(html_content, "html.parser")
     for tag in soup.find_all(True):
@@ -68,10 +54,10 @@ def docx_to_html(docx_path: str, html_path: str) -> None:
         save_html_file(html_path, html_content)
 
 
-def convert(docx_path: str) -> str:
+def convert(docx_path: str, remove_prefix: bool) -> str:
     try:
         html_path = os.path.splitext(docx_path)[0] + ".html"
-        docx_to_html(docx_path, html_path)
+        docx_to_html(docx_path, html_path, remove_prefix=remove_prefix)
         return html_path
     except RuntimeError as e:
         error_message = f"Error converting {os.path.basename(docx_path)} to HTML: {e}"
@@ -86,7 +72,34 @@ def insert_data(text_input: tk.Text, file_paths: List[str]) -> None:
     text_input.configure(state=tk.DISABLED)
 
 
-def on_drop(event: DnDEvent, path_input: tk.Text, path_output: tk.Text) -> None:
+def state_changed_message(status_value: bool) -> None:
+    change_message_window = tk.Toplevel()
+    change_message_window.resizable(False, False)
+    change_message_window.title("Value changed")
+    change_message_window.wait_visibility()
+    change_message_window.grab_set()
+
+    label = tk.Label(
+        change_message_window,
+        text=f"You have changed the prefix removal status to {status_value}",
+    )
+    label.pack(padx=10, pady=10)
+    change_message_window.after(1500, change_message_window.destroy)
+    change_message_window.deiconify()
+
+
+def on_shortcut_press(event: tk.Event, bool_var: tk.BooleanVar) -> None:
+    current_value = bool_var.get()
+    bool_var.set(not current_value)
+    state_changed_message(bool_var.get())
+
+
+def on_drop(
+    event: DnDEvent,
+    path_input: tk.Text,
+    path_output: tk.Text,
+    remove_prefix_var: tk.BooleanVar,
+) -> None:
     file_paths = event.data
     curly_paths = re.findall(r"{([^}]*)}", file_paths)
     cleaned_str = re.sub(r"{[^}]*}", "", file_paths)
@@ -97,9 +110,20 @@ def on_drop(event: DnDEvent, path_input: tk.Text, path_output: tk.Text) -> None:
 
     output_paths = []
     for docx_path in file_paths:
-        output_paths.append(convert(docx_path))
+        output_paths.append(convert(docx_path, remove_prefix=remove_prefix_var.get()))
 
     insert_data(path_output, output_paths)
+
+
+def build_text_frame(
+    root: tk.Tk, pack_position: PositionOption, label_text: str
+) -> tk.Frame:
+    frame = tk.Frame(root, padx=10, pady=10)
+    frame.pack(side=pack_position, fill=tk.BOTH, expand=True, padx=10)
+    label = tk.Label(frame, text=label_text)
+    label.pack()
+
+    return frame
 
 
 def build_scrollable_text_field(main_frame: tk.Frame) -> tk.Text:
@@ -134,22 +158,21 @@ def main() -> None:
     root.geometry(f"{width}x{height}")
     root.minsize(width, height)
 
-    left_frame = tk.Frame(root, padx=10, pady=10)
-    left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
-    left_label = tk.Label(left_frame, text="Drag & drop .docx or .doc file(s) here:")
-    left_label.pack()
+    remove_prefix = tk.BooleanVar(root, value=True)
+    left_frame = build_text_frame(
+        root, tk.LEFT, "Drag & drop .docx or .doc file(s) here:"
+    )
     left_input_text = build_scrollable_text_field(left_frame)
 
-    right_frame = tk.Frame(root, padx=10, pady=10)
-    right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10)
-    right_label = tk.Label(right_frame, text="Converted HTML file(s):")
-    right_label.pack()
+    right_frame = build_text_frame(root, tk.RIGHT, "Converted HTML file(s):")
     right_output_text = build_scrollable_text_field(right_frame)
+
+    root.bind("<Control-z>", lambda event: on_shortcut_press(event, remove_prefix))
 
     root.drop_target_register(DND_FILES)
     root.dnd_bind(
         "<<Drop>>",
-        lambda event: on_drop(event, left_input_text, right_output_text),
+        lambda event: on_drop(event, left_input_text, right_output_text, remove_prefix),
     )
 
     root.mainloop()
