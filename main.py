@@ -17,13 +17,13 @@ def windows_fix(html_content: str) -> str:
     return re.sub(r"\n\n", " ", html_content)
 
 
-def save_html_file(html_path: str, html_content: str) -> None:
-    with open(html_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
+def save_file(file_path: str, file_content: str) -> None:
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(file_content)
 
 
-def open_html_file(html_path: str) -> str:
-    with open(html_path, "r", encoding="utf-8") as f:
+def open_file(file_path: str) -> str:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
     return content
 
@@ -47,11 +47,11 @@ def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
         tag.attrs.pop("id", None)
     modified_html = str(soup)
 
-    save_html_file(html_path, modified_html)
+    save_file(html_path, modified_html)
     if platform.system() == WINDOWS_OS:
-        html_content = open_html_file(html_path)
+        html_content = open_file(html_path)
         html_content = windows_fix(html_content)
-        save_html_file(html_path, html_content)
+        save_file(html_path, html_content)
 
 
 def convert(docx_path: str, remove_prefix: bool) -> str:

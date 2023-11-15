@@ -24,7 +24,7 @@ text from specific website blogs stored in DOCX files to HTML format. **IMAGE CO
        ```sh
        sudo apt-get install pandoc
 
-    2. [For Windows:](https://github.com/jgm/pandoc/releases/download/3.1.9/) download and install latest `*.msi` file
+    2. [For Windows:](https://github.com/jgm/pandoc/releases/tag/3.1.9/) download and install latest `*.msi` file
 
 * Then execute command in the project folder:
   ```sh
