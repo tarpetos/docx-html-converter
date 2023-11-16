@@ -6,7 +6,7 @@ from tkinterdnd2 import TkinterDnD, DND_FILES
 from tkinterdnd2.TkinterDnD import DnDEvent
 
 from .constants import APP_WIDTH, APP_HEIGHT, MESSAGEBOX_DESTROY_TIME_MS
-from .parser import convert
+from .convertor import convert
 
 PositionOption: Type = Literal["left", "right", "top", "bottom"]
 
