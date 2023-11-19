@@ -34,7 +34,7 @@ class ScrollableTextFrame(tk.Frame):
         super().__init__(*args, **kwargs)
         self.padding = frame_padding
         self.input_text = tk.Text(
-            self, wrap=tk.NONE, height=text_height, width=text_width, state=tk.DISABLED
+            self, wrap=tk.NONE, height=text_height, width=text_width, state=tk.DISABLED, background="gray"
         )
         self.vertical_scroll = tk.Scrollbar(
             self, orient=tk.VERTICAL, command=self.input_text.yview
@@ -61,7 +61,7 @@ class ScrollableTextFrame(tk.Frame):
 
 
 class ToplevelMessagebox(tk.Toplevel):
-    BG_COLOR = "white"
+    BG_COLOR = "black"
     TEXT_FIELD_WIDTH = 60
     TEXT_FIELD_HEIGHT = 10
     ICON = '::tk::icons::information'
@@ -115,15 +115,18 @@ class ToplevelMessagebox(tk.Toplevel):
 
 
 class DocxHtmlConverter(TkinterDnD.Tk):
+    MAIN_BG_COLOR = "black"
+    LABEL_COLOR = "white"
+
     def __init__(self) -> None:
         super().__init__()
         self._set_config()
 
-        self.action_frame = tk.Frame(self)
+        self.action_frame = tk.Frame(self, background=self.MAIN_BG_COLOR)
         self.action_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=5)
-        self.left_label = tk.Label(self.action_frame, text="Input path(s):")
+        self.left_label = tk.Label(self.action_frame, background=self.MAIN_BG_COLOR, foreground=self.LABEL_COLOR, text="Input path(s):")
         self.left_label.grid_configure(row=0, column=0)
-        self.right_label = tk.Label(self.action_frame, text="Output path(s):")
+        self.right_label = tk.Label(self.action_frame, background=self.MAIN_BG_COLOR, foreground=self.LABEL_COLOR, text="Output path(s):")
         self.right_label.grid_configure(row=0, column=1)
 
         self.left_input_frame = ScrollableTextFrame(
@@ -132,7 +135,8 @@ class DocxHtmlConverter(TkinterDnD.Tk):
                 event,
                 self.left_input_frame.input_text,
                 self.right_input_frame.input_text,
-            )
+            ),
+            background=self.MAIN_BG_COLOR,
         )
         self.left_input_frame.grid_configure(row=1, column=0, sticky=tk.NSEW)
 
@@ -141,7 +145,8 @@ class DocxHtmlConverter(TkinterDnD.Tk):
             _on_double_click=lambda event: self.on_right_input_double_click(
                 event,
                 self.right_input_frame.input_text,
-            )
+            ),
+            background=self.MAIN_BG_COLOR,
         )
         self.right_input_frame.grid_configure(row=1, column=1, sticky=tk.NSEW)
 
@@ -157,7 +162,6 @@ class DocxHtmlConverter(TkinterDnD.Tk):
         self.action_frame.grid_rowconfigure(2, weight=1)
 
         self.remove_prefix = tk.BooleanVar(self, value=True)
-
         self.bind("<Control-z>", self.on_shortcut_press)
         self._set_dnd()
 
@@ -219,6 +223,7 @@ class DocxHtmlConverter(TkinterDnD.Tk):
         self.title("DOCX-HTML CONVERTER")
         self.geometry(f"{APP_WIDTH}x{APP_HEIGHT}")
         self.minsize(APP_WIDTH, APP_HEIGHT)
+        self.configure(background=self.MAIN_BG_COLOR)
 
     def _set_dnd(self) -> None:
         self.drop_target_register(DND_FILES)
