@@ -1,7 +1,12 @@
 import os
 import pytest
 from docx_html_converter.constants import HTML_EXTENSION
-from docx_html_converter.convertor import windows_fix, remove_html_prefix, docx_to_html, convert
+from docx_html_converter.convertor import (
+    windows_fix,
+    remove_html_prefix,
+    docx_to_html,
+    convert,
+)
 
 
 @pytest.fixture
@@ -40,20 +45,21 @@ def test_docx_to_html_fail(test_docx_path):
 def test_docx_to_html_success(test_docx_path):
     test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
     docx_to_html(test_docx_path, test_html_path, remove_prefix=True)
-    actual_result = os.path.exists(test_html_path)
-    expected_result = True
-    assert actual_result == expected_result
+    assert os.path.exists(test_html_path)
 
 
 def test_convert_fail(test_docx_path):
-    actual_result = convert(test_docx_path, remove_prefix=True)
+    test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
+    actual_result = convert(test_docx_path, test_html_path, remove_prefix=True)
     expected_result = f"Error converting {os.path.basename(test_docx_path)} to HTML: "
     assert actual_result.startswith(expected_result)
 
 
 def test_convert_success(test_docx_path):
-    actual_result = convert(test_docx_path, remove_prefix=True)
-    expected_result = os.path.splitext(test_docx_path)[0] + f".{HTML_EXTENSION}"
+    test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
+    actual_result = convert(test_docx_path, test_html_path, remove_prefix=True)
+    expected_result = (
+        f"{os.path.basename(test_docx_path)} converted to HTML successfully!\n"
+    )
     assert actual_result == expected_result
-    assert os.path.exists(expected_result)
-
+    assert os.path.exists(test_html_path)

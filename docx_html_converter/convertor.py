@@ -2,7 +2,6 @@ import os
 import re
 import platform
 import pypandoc
-from tkinter import messagebox as mb
 from bs4 import BeautifulSoup
 
 from .file_processor import save_file, read_file
@@ -43,12 +42,10 @@ def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
         save_file(html_path, html_content)
 
 
-def convert(docx_path: str, remove_prefix: bool) -> str:
+def convert(docx_path: str, html_path: str,  remove_prefix: bool) -> str:
     try:
-        html_path = os.path.splitext(docx_path)[0] + f".{HTML_EXTENSION}"
         docx_to_html(docx_path, html_path, remove_prefix=remove_prefix)
-        return html_path
+        status_message = f"{os.path.basename(docx_path)} converted to HTML successfully!\n"
     except RuntimeError as msg:
-        error_message = f"Error converting {os.path.basename(docx_path)} to HTML: {msg}"
-        mb.showerror(title="ERROR!", message=error_message)
-        return error_message
+        status_message = f"Error converting {os.path.basename(docx_path)} to HTML: {msg}"
+    return status_message
