@@ -1,11 +1,11 @@
 import os
-import re
 import platform
+import re
 import pypandoc
 from bs4 import BeautifulSoup
 
+from .constants import WINDOWS_OS, HTML_EXTENSION
 from .file_processor import save_file, read_file
-from .constants import WINDOWS_OS, HTML_EXTENSION, DOCX_EXTENSION
 
 
 def windows_fix(html_content: str) -> str:
@@ -26,7 +26,11 @@ def remove_html_prefix(html_content: str) -> str:
 
 
 def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
-    html_content = pypandoc.convert_file(docx_path, HTML_EXTENSION, format=DOCX_EXTENSION)
+    convert_file_extension = os.path.splitext(docx_path)[1][1:]
+
+    html_content = pypandoc.convert_file(
+        docx_path, HTML_EXTENSION, format=convert_file_extension
+    )
     if remove_prefix:
         html_content = remove_html_prefix(html_content)
 
@@ -42,10 +46,14 @@ def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
         save_file(html_path, html_content)
 
 
-def convert(docx_path: str, html_path: str,  remove_prefix: bool) -> str:
+def convert(docx_path: str, html_path: str, remove_prefix: bool) -> str:
     try:
         docx_to_html(docx_path, html_path, remove_prefix=remove_prefix)
-        status_message = f"{os.path.basename(docx_path)} converted to HTML successfully!\n"
+        status_message = (
+            f"{os.path.basename(docx_path)} converted to HTML successfully!\n"
+        )
     except RuntimeError as msg:
-        status_message = f"Error converting {os.path.basename(docx_path)} to HTML: {msg}"
+        status_message = (
+            f"Error converting {os.path.basename(docx_path)} to HTML: {msg}"
+        )
     return status_message
