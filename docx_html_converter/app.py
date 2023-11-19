@@ -2,17 +2,12 @@ import os.path
 import re
 import tkinter as tk
 from tkinter import filedialog
-from typing import Type, Literal, List, Optional, Callable, Tuple
-
+from typing import List, Optional, Callable, Tuple
 from tkinterdnd2 import TkinterDnD, DND_FILES
 from tkinterdnd2.TkinterDnD import DnDEvent
 
 from .constants import APP_WIDTH, APP_HEIGHT, MESSAGEBOX_DESTROY_TIME_MS, HTML_EXTENSION
-
 from .convertor import convert
-
-PositionOption: Type = Literal["left", "right", "top", "bottom"]
-FileOption: Type = Literal["save", "open"]
 
 
 def extract_list_from_str(string_for_list: str) -> List[str]:
@@ -117,18 +112,6 @@ class ToplevelMessagebox(tk.Toplevel):
 
     def _show(self) -> None:
         self.wait_window()
-
-
-class LabeledFrame(tk.Frame):
-    def __init__(
-            self, label_text: str, pack_pos: PositionOption, *args, **kwargs
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self._label = tk.Label(self, text=label_text)
-        self._place_elements(pack_pos)
-
-    def _place_elements(self, pack_pos: PositionOption) -> None:
-        self._label.pack()
 
 
 class DocxHtmlConverter(TkinterDnD.Tk):
