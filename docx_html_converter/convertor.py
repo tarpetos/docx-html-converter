@@ -25,7 +25,14 @@ def remove_html_prefix(html_content: str) -> str:
     return html_content
 
 
-def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
+def remove_strong_tags(html_content: str) -> str:
+    modified_content = html_content.replace("<strong>", "")
+    modified_content = modified_content.replace("</strong>", "")
+
+    return modified_content
+
+
+def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool, remove_strong: bool) -> None:
     convert_file_extension = os.path.splitext(docx_path)[1][1:]
 
     html_content = pypandoc.convert_file(
@@ -33,6 +40,9 @@ def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
     )
     if remove_prefix:
         html_content = remove_html_prefix(html_content)
+
+    if remove_strong:
+        html_content = remove_strong_tags(html_content)
 
     soup = BeautifulSoup(html_content, f"{HTML_EXTENSION}.parser")
     for tag in soup.find_all(True):
@@ -46,9 +56,9 @@ def docx_to_html(docx_path: str, html_path: str, remove_prefix: bool) -> None:
         save_file(html_path, html_content)
 
 
-def convert(docx_path: str, html_path: str, remove_prefix: bool) -> str:
+def convert(docx_path: str, html_path: str, remove_prefix: bool, remove_strong: bool) -> str:
     try:
-        docx_to_html(docx_path, html_path, remove_prefix=remove_prefix)
+        docx_to_html(docx_path, html_path, remove_prefix=remove_prefix, remove_strong=remove_strong)
         status_message = (
             f"{os.path.basename(docx_path)} converted to HTML successfully!\n"
         )

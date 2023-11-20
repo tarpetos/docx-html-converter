@@ -244,7 +244,9 @@ class DocxHtmlConverter(TkinterDnD.Tk):
         self.action_frame.grid_rowconfigure(2, weight=1)
 
         self.remove_prefix = tk.BooleanVar(self, value=True)
-        self.bind("<Control-z>", self.on_shortcut_press)
+        self.bind("<Control-z>", self.on_remove_prefix_shortcut_press)
+        self.remove_strong = tk.BooleanVar(self, value=True)
+        self.bind("<Control-x>", self.on_remove_strong_shortcut_press)
         self._set_dnd()
 
     def on_convert(self) -> None:
@@ -264,13 +266,20 @@ class DocxHtmlConverter(TkinterDnD.Tk):
             )
             return None
 
-        remove_flag = self.remove_prefix.get()
+        remove_prefix_flag = self.remove_prefix.get()
+        remove_strong_flag = self.remove_strong.get()
         convert_status_messages = []
         for index, (input_path, output_path) in enumerate(
             zip(input_paths, output_paths), 1
         ):
+            message = convert(
+                input_path,
+                output_path,
+                remove_prefix=remove_prefix_flag,
+                remove_strong=remove_strong_flag
+            )
             convert_status_messages.append(
-                f"{index}. {convert(input_path, output_path, remove_prefix=remove_flag)}"
+                f"{index}. {message}"
             )
 
         ToplevelMessagebox(
@@ -337,12 +346,22 @@ class DocxHtmlConverter(TkinterDnD.Tk):
             ),
         )
 
-    def on_shortcut_press(self, event: tk.Event) -> None:
+    def on_remove_prefix_shortcut_press(self, event: tk.Event) -> None:
         current_value = self.remove_prefix.get()
         self.remove_prefix.set(not current_value)
         ToplevelMessagebox(
             title="PREFIX REMOVAL STATUS",
             text=f"You have changed the prefix removal status to {not current_value}!",
+            destroy_timeout=MESSAGEBOX_DESTROY_TIME_MS,
+            bg_color=self.MAIN_BG_COLOR,
+        )
+
+    def on_remove_strong_shortcut_press(self, event: tk.Event) -> None:
+        current_value = self.remove_strong.get()
+        self.remove_strong.set(not current_value)
+        ToplevelMessagebox(
+            title="STRONG REMOVAL STATUS",
+            text=f"You have changed the strong tags removal status to {not current_value}!",
             destroy_timeout=MESSAGEBOX_DESTROY_TIME_MS,
             bg_color=self.MAIN_BG_COLOR,
         )
@@ -354,7 +373,6 @@ class DocxHtmlConverter(TkinterDnD.Tk):
         path_output: tk.Text,
     ) -> None:
         file_paths = event.data
-        print(file_paths)
         curly_paths = re.findall(r"{([^}]*)}", file_paths)
         cleaned_str = re.sub(r"{[^}]*}", "", file_paths)
         space_separated_paths = cleaned_str.split()

@@ -39,25 +39,25 @@ def test_remove_html_prefix(test_parse_html_data):
 def test_docx_to_html_fail(test_docx_path):
     with pytest.raises(RuntimeError):
         test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
-        docx_to_html(test_docx_path, test_html_path, remove_prefix=True)
+        docx_to_html(test_docx_path, test_html_path, remove_prefix=True, remove_strong=False)
 
 
 def test_docx_to_html_success(test_docx_path):
     test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
-    docx_to_html(test_docx_path, test_html_path, remove_prefix=True)
+    docx_to_html(test_docx_path, test_html_path, remove_prefix=True, remove_strong=False)
     assert os.path.exists(test_html_path)
 
 
 def test_convert_fail(test_docx_path):
     test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
-    actual_result = convert(test_docx_path, test_html_path, remove_prefix=True)
+    actual_result = convert(test_docx_path, test_html_path, remove_prefix=True, remove_strong=False)
     expected_result = f"Error converting {os.path.basename(test_docx_path)} to HTML: "
     assert actual_result.startswith(expected_result)
 
 
 def test_convert_success(test_docx_path):
     test_html_path = f"{os.path.splitext(test_docx_path)[0]}.{HTML_EXTENSION}"
-    actual_result = convert(test_docx_path, test_html_path, remove_prefix=True)
+    actual_result = convert(test_docx_path, test_html_path, remove_prefix=True, remove_strong=False)
     expected_result = (
         f"{os.path.basename(test_docx_path)} converted to HTML successfully!\n"
     )

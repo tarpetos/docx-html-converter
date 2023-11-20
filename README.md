@@ -16,6 +16,8 @@ text from specific website blogs stored in DOCX files to HTML format. **IMAGE CO
    converted or unconverted files.
 4. ***Task Removal:*** The application identifies and removes tasks stored before and inside the first `</ul>` tag in
    the HTML content. You can change it by pressing `CTRL+Z`. It is enabled by default.
+5. ***Strong Tag Removal:*** The application identifies and removes `<strong>` tags without removing HTML content
+   inside this tag. You can change it by pressing `CTRL+X`. It is enabled by default.
 
 ## Installation
 
@@ -53,3 +55,6 @@ pyinstaller -F -w --add-data "venv/lib/python3.<SPECIFIC_VERSION>/site-packages/
 ```sh
 pyinstaller -F -w --name "DOCX-HTML Converter" main.py --additional-hooks-dir=.
 ```
+
+## Example
+![docx_html_converter_usage_example.gif](examples%2Fdocx_html_converter_usage_example.gif)
