@@ -62,7 +62,7 @@ def convert(docx_path: str, html_path: str, remove_prefix: bool, remove_strong: 
         status_message = (
             f"{os.path.basename(docx_path)} converted to HTML successfully!\n"
         )
-    except RuntimeError as msg:
+    except (RuntimeError, FileNotFoundError) as msg:
         status_message = (
             f"Error converting {os.path.basename(docx_path)} to HTML: {msg}"
         )
