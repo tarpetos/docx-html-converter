@@ -21,7 +21,7 @@ def test_parse_html_data():
 
 @pytest.fixture
 def test_docx_path():
-    return os.path.join("test_data", "data_with_start_list.docx")
+    return os.path.join("test_data", "test_data/test_data.docx")
 
 
 def test_windows_fix(test_windows_fix_data):

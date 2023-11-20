@@ -124,8 +124,9 @@ class ToplevelMessagebox(tk.Toplevel):
     ) -> None:
         super().__init__()
         self._bg_color = bg_color
+        self._title = title
         self._destroy_timeout = destroy_timeout
-        self._set_config(title)
+        self._set_config()
 
         self._messagebox_frame = tk.Frame(self, background=self._bg_color)
         self._messagebox_frame.pack_configure(fill=tk.BOTH, expand=True, padx=5, pady=5)
@@ -159,10 +160,10 @@ class ToplevelMessagebox(tk.Toplevel):
 
         self._show()
 
-    def _set_config(self, title: str) -> None:
+    def _set_config(self) -> None:
         self.configure(background=self._bg_color)
         self.resizable(False, False)
-        self.title(title)
+        self.title(self._title)
         self.wait_visibility()
         self.grab_set()
         if self._destroy_timeout:
@@ -353,6 +354,7 @@ class DocxHtmlConverter(TkinterDnD.Tk):
         path_output: tk.Text,
     ) -> None:
         file_paths = event.data
+        print(file_paths)
         curly_paths = re.findall(r"{([^}]*)}", file_paths)
         cleaned_str = re.sub(r"{[^}]*}", "", file_paths)
         space_separated_paths = cleaned_str.split()
