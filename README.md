@@ -10,10 +10,12 @@ text from specific website blogs stored in DOCX files to HTML format. **IMAGE CO
 ## Features
 
 1. ***Drag-and-Drop Interface:*** Easily convert DOCX files by dragging and dropping them onto the application window.
-2. ***Task Removal:*** The application identifies and removes tasks stored before and inside the first `</ul>` tag in
-   the HTML content. You can change it by pressing `CTRL+Z`
-3. ***Dual Input:*** Provides dual input fields, displaying the path of the dropped file(s) and path of the converted
-   file(s). You can drop a file(s) to any of the inputs. Paths will be set automatically.
+2. ***File Dialogs:*** You can open the file selector by double-clicking on the left text box and select files to
+   convert, or you can change the save directory by double-clicking on the right text box.
+3. ***Conversion Info:*** After the files are converted, you will see a message box with a list of all successfully
+   converted or unconverted files.
+4. ***Task Removal:*** The application identifies and removes tasks stored before and inside the first `</ul>` tag in
+   the HTML content. You can change it by pressing `CTRL+Z`. It is enabled by default.
 
 ## Installation
 
