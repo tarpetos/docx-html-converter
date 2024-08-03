@@ -1,7 +1,8 @@
 import os.path
 import re
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, ttk
+from tkinter.ttk import Style
 from typing import List, Optional, Callable, Tuple
 from tkinterdnd2 import TkinterDnD, DND_FILES
 from tkinterdnd2.TkinterDnD import DnDEvent
@@ -72,26 +73,33 @@ class ScrollableTextFrame(tk.Frame):
             borderwidth=0,
             highlightthickness=0,
         )
-        self.vertical_scroll = tk.Scrollbar(
+        scrollbar_style: Style = Style()
+        scrollbar_style.theme_use("clam")
+
+        self.vertical_scroll = ttk.Scrollbar(
             self,
             orient=tk.VERTICAL,
             command=self.input_text.yview,
-            background=self.SCROLLBAR_BG,
-            activebackground=self.SCROLLBAR_ACTIVE_BG,
-            troughcolor=self.SCROLLBAR_TROUGH_BG,
-            borderwidth=0,
-            highlightthickness=0,
         )
-        self.horizontal_scroll = tk.Scrollbar(
+        self.horizontal_scroll = ttk.Scrollbar(
             self,
             orient=tk.HORIZONTAL,
             command=self.input_text.xview,
-            background=self.SCROLLBAR_BG,
-            activebackground=self.SCROLLBAR_ACTIVE_BG,
-            troughcolor=self.SCROLLBAR_TROUGH_BG,
+        )
+
+        scrollbar_style.configure(
+            "TScrollbar",
             borderwidth=0,
             highlightthickness=0,
+            background=self.SCROLLBAR_BG,
+            troughcolor=self.SCROLLBAR_TROUGH_BG,
         )
+        scrollbar_style.map(
+            "TScrollbar",
+            background=[("disabled", self.SCROLLBAR_BG), ("active", self.SCROLLBAR_ACTIVE_BG)],
+            troughcolor=[("disabled", self.SCROLLBAR_TROUGH_BG), ("active", self.SCROLLBAR_TROUGH_BG)],
+        )
+
         self.input_text.configure(
             yscrollcommand=self.vertical_scroll.set,
             xscrollcommand=self.horizontal_scroll.set,
